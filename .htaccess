@@ -1,0 +1,49 @@
+# Hostel Management System - .htaccess
+# Security and URL rewriting
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to sensitive files (dotfiles, backups, SQL, config, logs, etc.)
+<FilesMatch "(^\.|\.bak$|\.sql$|\.ini$|\.log$|\.sh$|\.md$|\.env$)">
+    Require all denied
+</FilesMatch>
+
+# Block access to config files
+<FilesMatch "config\.php">
+    Require all denied
+</FilesMatch>
+
+# Block access to database files
+<FilesMatch "\.sql$">
+    Require all denied
+</FilesMatch>
+
+# URL rewriting - redirect all requests to index.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect all non-file, non-directory requests to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Cache control for static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+</IfModule>
